@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import javax.swing.SwingConstants;
 
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,6 +33,7 @@ public class NineMensMorrisGUI extends JFrame {
     private JButton creditButton;
     private JButton githubButton;
     private JButton settingsButton;
+    String difficulty = "Easy";
 
     private JToggleButton modeToggle;
 
@@ -62,7 +65,6 @@ public class NineMensMorrisGUI extends JFrame {
         
             currentGame.makeMove(move);
             boardPanel.repaint();
-            System.out.println("not you");
 
         
             if (currentGame.hasCurrentPlayerLost()) {
@@ -78,10 +80,28 @@ public class NineMensMorrisGUI extends JFrame {
                 boardPanel.makeMove();  
                 // Allow the CPU to make a move in PvCPU mode
                 if (currentPlayer == 1 && !pvpMode) { 
-                    statusLabel.setText("Making move...");
-        
-                    int maxDepth = Integer.parseInt(maxDepthTextField.getText());
-                    int maxTime = Integer.parseInt(maxTimeTextField.getText()) * 1000;
+                    statusLabel.setText("Making A Move...");
+                    int maxDepth = 5;
+                    int maxTime = 5 * 1000;
+                    switch (difficulty) {
+                        case "Easy":
+                            maxDepth = 5; 
+                            maxTime = 5000;
+                            break;
+                        case "Medium":
+                            maxDepth = 10; 
+                            maxTime = 10000; 
+                            break;
+                        case "Hard":
+                            maxDepth = 15;
+                            maxTime = 15000;
+                            break;
+                        default:
+                            maxDepth = 5; 
+                            maxTime = 5000;
+                            break;
+                    }
+                    
         
                     solver.setMaxDepth(maxDepth);
                     solver.setMaxTime(maxTime);
@@ -111,6 +131,13 @@ public class NineMensMorrisGUI extends JFrame {
 
         solver = new AlphaBetaPruning(currentGame, maxDepth, maxTime);
         boardPanel.makeMove();
+    }
+
+    private void customButtonp(JRadioButton button) {
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(100, 30)); // Set preferred size
+        button.setBackground(Color.LIGHT_GRAY); // Set background color
+        button.setBorder(new EmptyBorder(5, 10, 5, 10)); 
     }
     
 
@@ -195,31 +222,74 @@ public class NineMensMorrisGUI extends JFrame {
                 settingsPopup.setSize(300, 200); // Set the size of the pop-up window
                 settingsPopup.setLocationRelativeTo(null); // Center the pop-up window on the screen
                 
-                // Panel for text fields and save button
-                JPanel settingsPanel = new JPanel();
-                settingsPanel.setLayout(new FlowLayout());
-                JTextField maxTimeTextField = new JTextField(3);
-                maxTimeTextField.setText(Integer.toString(15)); // Initialize with current value
-                settingsPanel.add(new JLabel("Max move time:"));
-                settingsPanel.add(maxTimeTextField);
-                
-                JTextField maxDepthTextField = new JTextField(3);
-                maxDepthTextField.setText(Integer.toString(30)); // Initialize with current value
-                settingsPanel.add(new JLabel("Max searching depth:"));
-                settingsPanel.add(maxDepthTextField);
+                // Panel for difficulty selection
+                JPanel settingsPanel = new JPanel(new GridBagLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.gridwidth = 2;
+                gbc.anchor = GridBagConstraints.WEST;
+                settingsPanel.add(new JLabel("Select Difficulty:"), gbc);
+        
+                gbc.gridwidth = 1;
+                gbc.gridy++;
+                JRadioButton easyButton = new JRadioButton("Easy");
+                customButtonp(easyButton);
+                settingsPanel.add(easyButton, gbc);
+        
+                gbc.gridy++;
+                JRadioButton mediumButton = new JRadioButton("Medium");
+                customButtonp(mediumButton);
+                settingsPanel.add(mediumButton, gbc);
+        
+                gbc.gridy++;
+                JRadioButton hardButton = new JRadioButton("Hard");
+                customButtonp(hardButton);
+                settingsPanel.add(hardButton, gbc);
+        
+                ButtonGroup difficultyGroup = new ButtonGroup();
+                difficultyGroup.add(easyButton);
+                difficultyGroup.add(mediumButton);
+                difficultyGroup.add(hardButton);
+
+
+                if (difficulty == "Easy") {
+                    easyButton.setSelected(true);
+
+                    
+                } else if (difficulty == "Medium") {
+                    mediumButton.setSelected(true);
+
+                }
+                else {
+                    hardButton.setSelected(true);
+
+                }
                 
                 // Save button
                 JButton saveButton = new JButton("Save");
+                customButton(saveButton);
                 saveButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Update the values with the user input
-                        maxTime = Integer.parseInt(maxTimeTextField.getText());
-                        maxDepth = Integer.parseInt(maxDepthTextField.getText());
+                        // Update the difficulty based on user selection
+                        if (easyButton.isSelected()) {
+                            // Set the difficulty to Easy
+                            difficulty = "Easy";
+                        } else if (mediumButton.isSelected()) {
+                            // Set the difficulty to Medium
+                            difficulty = "Medium";
+                        } else if (hardButton.isSelected()) {
+                            // Set the difficulty to Hard
+                            difficulty = "Hard";
+                        }
                         settingsPopup.dispose(); // Close the settings pop-up window
                     }
                 });
-                settingsPanel.add(saveButton);
+                gbc.gridy++;
+                gbc.gridwidth = 2;
+                gbc.anchor = GridBagConstraints.CENTER;
+                settingsPanel.add(saveButton, gbc);
                 
                 // Add the settings panel to the content pane of the settings pop-up window
                 settingsPopup.getContentPane().add(settingsPanel, BorderLayout.CENTER);
