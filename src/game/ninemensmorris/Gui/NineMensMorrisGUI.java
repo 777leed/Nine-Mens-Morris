@@ -37,8 +37,6 @@ public class NineMensMorrisGUI extends JFrame {
 
     private JToggleButton modeToggle;
 
-    private JTextField maxTimeTextField;
-    private JTextField maxDepthTextField;
     private JLabel statusLabel;
     private AlphaBetaPruning solver;
     private volatile MoveExecutorCallback moveExecutor;

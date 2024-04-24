@@ -183,7 +183,6 @@ public class NineMensMorrisBoard extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (!doMakeMove || board.hasCurrentPlayerLost()) {
-				System.out.println("Lost Or False");
 
 				return;
 			}
