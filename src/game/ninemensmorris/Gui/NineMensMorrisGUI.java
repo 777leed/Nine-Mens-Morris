@@ -8,6 +8,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;   
 import javax.swing.SwingConstants;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
@@ -303,9 +307,16 @@ public class NineMensMorrisGUI extends JFrame {
         githubButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                try {
+                    // Open the GitHub repository link in the default browser
+                    Desktop.getDesktop().browse(new URI("https://github.com/777leed/nine-Mens-Morris"));
+                } catch (IOException | URISyntaxException ex) {
+                    ex.printStackTrace();
+                    // Handle the exception if the link cannot be opened
+                }
             }
         });
+        
         gbc2.gridy++;
         leftSideButtonsPanel.add(githubButton, gbc2);
 
@@ -321,7 +332,7 @@ public class NineMensMorrisGUI extends JFrame {
                 popup.setLocationRelativeTo(null); // Center the pop-up window on the screen
                 
                 // Create a JLabel with the credits text
-                JLabel creditsLabel = new JLabel("<html><center>This game was created by @Adnane.</center></html>");
+                JLabel creditsLabel = new JLabel("<html><center>This game was created by @Adnane.<br><br>©Copyright2024©</center></html>");
                 creditsLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
                 
                 // Add the JLabel to the content pane of the pop-up window
