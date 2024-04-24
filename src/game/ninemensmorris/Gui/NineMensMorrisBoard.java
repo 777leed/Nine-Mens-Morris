@@ -63,8 +63,6 @@ public class NineMensMorrisBoard extends JPanel {
 	
 	public void makeMove() {
 		this.doMakeMove = true;
-		System.out.println("Inside the make move for the " + ii++ + "time");
-		System.out.println(doMakeMove);
 	}
 	
 	Point getPositionCoords(int position) {
