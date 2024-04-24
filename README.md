@@ -1,5 +1,3 @@
-Sure, here's a suggested README file description for your Nine Men's Morris game on GitHub:
-
 ---
 
 # Nine Men's Morris Game By @Adnane
@@ -21,19 +19,5 @@ To get started with the game, follow these simple steps:
 2. Open the project in your preferred IDE or text editor.
 3. Compile and run the game executable.
 4. Start a new game and enjoy playing!
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute to the project, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them with descriptive messages.
-4. Push your branch to your fork.
-5. Open a pull request with a detailed explanation of your changes.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE), which means you are free to use, modify, and distribute the code for both personal and commercial purposes.
 
 ---
