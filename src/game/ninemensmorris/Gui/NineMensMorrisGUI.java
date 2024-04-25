@@ -204,6 +204,7 @@ public class NineMensMorrisGUI extends JFrame {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                NineMensMorrisBoard.lastremoved = null;
                 startNewGame();
                 if (pvpMode) {
                     gameEnded = false;

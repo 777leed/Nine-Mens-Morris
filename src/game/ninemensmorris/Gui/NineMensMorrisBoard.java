@@ -29,8 +29,7 @@ public class NineMensMorrisBoard extends JPanel {
 	private MoveExecutorCallback moveExecutor;
 	private boolean doMakeMove;
 	private boolean showIllustration; // Flag to determine whether to show the illustration or not
-	int ii = 1;
-
+	public static Point lastremoved;
 	
 	public NineMensMorrisBoard() {
 		addMouseListener(new Controller());
@@ -60,6 +59,16 @@ public class NineMensMorrisBoard extends JPanel {
 
 		repaint();
 	}
+
+	private void animatePieceRemoval(Graphics2D g2, Point animationPosition,int size) {
+		// Calculate the size of the piece based on the animation counter
+		System.out.println("animate piece removal");
+		
+		// Draw the animated piece
+		g2.setColor(Color.BLACK); // Adjust the color as needed
+		g2.fillOval(animationPosition.x - size / 2, animationPosition.y - size / 2, size, size);
+	}
+	
 	
 	public void makeMove() {
 		this.doMakeMove = true;
@@ -122,6 +131,10 @@ public class NineMensMorrisBoard extends JPanel {
 		AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f); // Adjust the opacity (0.5f) as needed
 
 		g2.setComposite(alphaComposite);
+		if (lastremoved != null) {
+			animatePieceRemoval(g2, lastremoved, 40);
+
+		}
 		for (int i = 0; i < 24; i++) {
 			Point coords = getPositionCoords(i);
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -202,6 +215,7 @@ public class NineMensMorrisBoard extends JPanel {
 							if (areAllOtherPlayerPiecesFromMill || !board.doesPieceCompleteMill(-1, i, board.getOtherPlayer())) {
 								move = new Move(move.getFromPosition(), move.getToPosition(), i);
 								if (board.isMoveValid(move)) {
+									lastremoved = coords;
 									moveExecutor.makeMove(move);
 									move = null;
 									millFormed = false;
@@ -232,6 +246,7 @@ public class NineMensMorrisBoard extends JPanel {
 								if (board.doesPieceCompleteMill(move.getFromPosition(), move.getToPosition(), board.getCurrentPlayer())) {
 									millFormed = true;
 								} else {
+									lastremoved = coords;
 									moveExecutor.makeMove(move);
 									move = null;
 									doMakeMove = true;
