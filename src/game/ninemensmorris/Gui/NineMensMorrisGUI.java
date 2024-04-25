@@ -13,13 +13,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.swing.Timer;
+
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
@@ -38,6 +39,10 @@ public class NineMensMorrisGUI extends JFrame {
     private JButton githubButton;
     private JButton settingsButton;
     String difficulty = "Easy";
+    private Timer player1Timer;
+    private Timer player2Timer;
+    private int currentPlayerTime;
+    private boolean gameEnded = false; // Track if the game has ended
 
     private JToggleButton modeToggle;
 
@@ -51,12 +56,14 @@ public class NineMensMorrisGUI extends JFrame {
 
 
     private class MoveExecutor implements MoveExecutorCallback {
+        
         private boolean terminate = false;
 
         public synchronized void terminate() {
             this.terminate = true;
             solver.terminateSearch();
         }
+        
 
         @Override
         public synchronized void makeMove(Move move) {
@@ -64,7 +71,10 @@ public class NineMensMorrisGUI extends JFrame {
                 return;
             }
 
-        
+            if (pvpMode && gameEnded) {
+                return;
+            }
+            
             currentGame.makeMove(move);
             boardPanel.repaint();
 
@@ -77,7 +87,20 @@ public class NineMensMorrisGUI extends JFrame {
                 }
             } else {
                 // Toggle between players
+
+                
                 currentPlayer = 1 - currentPlayer;
+                if (pvpMode) {
+                    currentPlayerTime = 30;
+                    gameEnded = false;
+                    initializeTimers(); // Ensure timers are initialized
+                    if (currentPlayer == 0) {
+                        player1Timer.start();
+                    } else {
+                        player2Timer.start();
+                    }
+                }
+                
                 statusLabel.setText("Player " + (currentPlayer + 1) + "'s move");
                 boardPanel.makeMove();  
                 // Allow the CPU to make a move in PvCPU mode
@@ -122,6 +145,7 @@ public class NineMensMorrisGUI extends JFrame {
     }
 
     private void startNewGame() {
+
         if (moveExecutor != null) {
             moveExecutor.terminate();
         }
@@ -137,9 +161,23 @@ public class NineMensMorrisGUI extends JFrame {
 
     private void customButtonp(JRadioButton button) {
         button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(100, 30)); // Set preferred size
+        button.setPreferredSize(new Dimension(100,  30)); // Set preferred size
         button.setBackground(Color.LIGHT_GRAY); // Set background color
         button.setBorder(new EmptyBorder(5, 10, 5, 10)); 
+    }
+
+    private synchronized void endGame(String winner) {
+        // Stop both timers
+        player1Timer.stop();
+        player2Timer.stop();
+        gameEnded = true; // Set gameEnded flag to true
+        statusLabel.setText(winner + " won!");
+
+        // Add any other end game logic here
+    }
+
+    private synchronized void updateStatusLabel() {
+        statusLabel.setText("Player " + (currentPlayer + 1) + "'s move | Time left: " + currentPlayerTime + " seconds");
     }
     
 
@@ -167,13 +205,24 @@ public class NineMensMorrisGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 startNewGame();
+                if (pvpMode) {
+                    gameEnded = false;
+                    initializeTimers();
+                }
+                else {
+                    if (player1Timer != null) {
+                        player1Timer.stop();
+                        player1Timer = null;
+                    }
+                    if (player2Timer != null) {
+                        player2Timer.stop();
+                        player2Timer = null;
+                    }
+                }
 
             }
         });
         buttonsPanel.add(newGameButton, gbc);
-
-
-
 
         // Add mode toggle
         modeToggle = new JToggleButton("PvP");
@@ -360,9 +409,52 @@ public class NineMensMorrisGUI extends JFrame {
         controls.add(settingsPanel, BorderLayout.CENTER);
 
         add(controls, BorderLayout.SOUTH);
-
+        if (pvpMode) {
+            initializeTimers();
+        }
         startNewGame();
+
     }
+
+    private void initializeTimers() {
+        // Dispose of existing timers, if any
+        if (player1Timer != null) {
+            player1Timer.stop();
+            player1Timer = null;
+        }
+        if (player2Timer != null) {
+            player2Timer.stop();
+            player2Timer = null;
+        }
+    
+        // Initialize player timers
+        player1Timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentPlayerTime--;
+                updateStatusLabel();
+                if (currentPlayerTime <= 0) {
+                    // Player 1 ran out of time
+                    player1Timer.stop();
+                    endGame("Player 2");
+                }
+            }
+        });
+    
+        player2Timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentPlayerTime--;
+                updateStatusLabel();
+                if (currentPlayerTime <= 0) {
+                    // Player 2 ran out of time
+                    player2Timer.stop();
+                    endGame("Player 1");
+                }
+            }
+        });
+    }
+    
 
     /**
      * Customizes the appearance of the given button.
@@ -372,6 +464,7 @@ public class NineMensMorrisGUI extends JFrame {
         button.setBackground(Color.LIGHT_GRAY); // Set background color
         button.setBorder(new EmptyBorder(5, 10, 5, 10)); // Add a margin of 5 pixels top and bottom, 10 pixels left and right
     }
+    
     /**
      * @param args
      */
