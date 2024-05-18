@@ -307,7 +307,7 @@ public class NineMensMorrisGUI extends JFrame {
                 popup.setSize(300, 200);
                 popup.setLocationRelativeTo(null);
     
-                JLabel creditsLabel = new JLabel("<html><center>This game was created by @Adnane.<br><br>©Copyright2024©</center></html>");
+                JLabel creditsLabel = new JLabel("<html><center>This game was created by GROUP 19.<br><br>©Copyright2024©</center></html>");
                 creditsLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 popup.getContentPane().add(creditsLabel, BorderLayout.CENTER);
                 popup.setVisible(true);
