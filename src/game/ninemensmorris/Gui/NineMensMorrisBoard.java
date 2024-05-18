@@ -3,6 +3,7 @@ package game.ninemensmorris.Gui;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -76,13 +77,16 @@ public class NineMensMorrisBoard extends JPanel {
 	
 	Point getPositionCoords(int position) {
 		Point result = new Point();
-
-		int margin = 120;
+	
+		// Adjusted margin to fit the board within the panel
+		int margin = 100;
+	
+		// Use the minimum of width and height minus the margin for the metric
 		int width = getSize().width - 2 * margin;
 		int height = getSize().height - 2 * margin;
 		int metric = Math.min(width, height);
 		int positionSpace = metric / 6;
-		
+	
 		int row = position / 3;
 		if (row < 3) {
 			result.x = row * positionSpace + (position % 3) * (metric - 2 * row * positionSpace) / 2;
@@ -97,10 +101,10 @@ public class NineMensMorrisBoard extends JPanel {
 			result.x = metric - point.x;
 			result.y = metric - point.y;
 		}
-		
+	
 		result.x += margin;
 		result.y += margin;
-		
+	
 		return result;
 	}
 	
@@ -175,6 +179,8 @@ public class NineMensMorrisBoard extends JPanel {
             // Call the method to draw the illustration
             drawIllustration(g2);
         }
+
+
 	}
 
 	private void drawIllustration(Graphics2D g2) {
